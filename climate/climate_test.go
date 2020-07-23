@@ -26,10 +26,11 @@ func anualAvgHandler(w http.ResponseWriter, r *http.Request) {
 	fromCCYY := vars["fromCCYY"]
 	toCCYY := vars["toCCYY"]
 	countryISO := vars["countryISO"]
-
-	data, err := ioutil.ReadFile(fmt.Sprintf("./mock/%s_%s_%s.xml", fromCCYY, toCCYY, countryISO))
+	data, err := ioutil.ReadFile(fmt.Sprintf("./mock/average_Rainfall_For_%s_From_%s_to_%s.md", countryISO, fromCCYY, toCCYY))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(err.Error()))
+		return
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/xml")
