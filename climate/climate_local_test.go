@@ -37,30 +37,28 @@ func anualAvgHandler(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(data)
 }
 
-type ClimateTestSuite struct {
+type ClimateLocalTestSuite struct {
 	suite.Suite
 	client     ClientImpl
 	serverMock *httptest.Server
 }
 
-func TestClimateTestSuite(t *testing.T) {
-	suite.Run(t, new(ClimateTestSuite))
+func TestClimateLocalTestSuite(t *testing.T) {
+	suite.Run(t, new(ClimateLocalTestSuite))
 }
 
-func (s *ClimateTestSuite) SetupTest() {
+func (s *ClimateLocalTestSuite) SetupTest() {
 	validate := validator.New()
 	s.serverMock = serverMock()
-	// Flag to ON/OFF for request real API and mock server API
-	// s.serverMock.URL = "http://climatedataapi.worldbank.org/climateweb/rest/v1"
 	client := NewClient(http.DefaultClient, validate, s.serverMock.URL)
 	s.client = *client
 }
 
-func (s *ClimateTestSuite) TestNewClient_Success() {
+func (s *ClimateLocalTestSuite) TestNewClient_Success() {
 	s.NotNil(s.client)
 }
 
-func (s *ClimateTestSuite) TestNewGetRequestWithRelativeURL_Success() {
+func (s *ClimateLocalTestSuite) TestNewGetRequestWithRelativeURL_Success() {
 	var (
 		input    = "/country/annualavg/pr/1980/1999/GBR.xml"
 		expected = fmt.Sprintf("%s/country/annualavg/pr/1980/1999/GBR.xml", s.serverMock.URL)
@@ -71,7 +69,7 @@ func (s *ClimateTestSuite) TestNewGetRequestWithRelativeURL_Success() {
 	s.Nil(err)
 }
 
-func (s *ClimateTestSuite) TestNewGetRequestWithAbsoluteURL_Success() {
+func (s *ClimateLocalTestSuite) TestNewGetRequestWithAbsoluteURL_Success() {
 	var (
 		input    = fmt.Sprintf("%s/country/annualavg/pr/1980/1999/GBR.xml", s.serverMock.URL)
 		expected = fmt.Sprintf("%s/country/annualavg/pr/1980/1999/GBR.xml", s.serverMock.URL)
@@ -82,7 +80,7 @@ func (s *ClimateTestSuite) TestNewGetRequestWithAbsoluteURL_Success() {
 	s.Nil(err)
 }
 
-func (s *ClimateTestSuite) TestGetAnnualRainfall_Success() {
+func (s *ClimateLocalTestSuite) TestGetAnnualRainfall_Success() {
 	var (
 		input = GetAnnualRainfallArgs{
 			FromCCYY:   "1980",
@@ -96,7 +94,7 @@ func (s *ClimateTestSuite) TestGetAnnualRainfall_Success() {
 	s.Nil(err)
 }
 
-func (s *ClimateTestSuite) TestGetAnnualRainfall_Failed() {
+func (s *ClimateLocalTestSuite) TestGetAnnualRainfall_Failed() {
 	var (
 		input = GetAnnualRainfallArgs{
 			FromCCYY:   "1980",
@@ -111,7 +109,7 @@ func (s *ClimateTestSuite) TestGetAnnualRainfall_Failed() {
 	s.NotNil(err)
 }
 
-func (s *ClimateTestSuite) TestCalculateAveAnual_Success() {
+func (s *ClimateLocalTestSuite) TestCalculateAveAnual_Success() {
 	var (
 		list = List{
 			DomainWebAnnualGcmDatum: []DomainWebAnnualGcmDatum{
@@ -136,7 +134,7 @@ func (s *ClimateTestSuite) TestCalculateAveAnual_Success() {
 	s.Nil(err)
 }
 
-func (s *ClimateTestSuite) TestCalculateAveAnual_Failed() {
+func (s *ClimateLocalTestSuite) TestCalculateAveAnual_Failed() {
 	var (
 		list = List{
 			DomainWebAnnualGcmDatum: []DomainWebAnnualGcmDatum{},
@@ -150,7 +148,7 @@ func (s *ClimateTestSuite) TestCalculateAveAnual_Failed() {
 	s.NotNil(err)
 }
 
-func (s *ClimateTestSuite) TestAverageRainfallForGreatBritainFrom1980to1999Exists() {
+func (s *ClimateLocalTestSuite) TestAverageRainfallForGreatBritainFrom1980to1999Exists() {
 	var (
 		ctx      = context.Background()
 		expected = float64(988.8454972331014)
@@ -160,7 +158,7 @@ func (s *ClimateTestSuite) TestAverageRainfallForGreatBritainFrom1980to1999Exist
 	s.Nil(err)
 }
 
-func (s *ClimateTestSuite) TestAverageRainfallForFranceFrom1980to1999Exists() {
+func (s *ClimateLocalTestSuite) TestAverageRainfallForFranceFrom1980to1999Exists() {
 	var (
 		ctx      = context.Background()
 		expected = 913.7986955122727
@@ -170,7 +168,7 @@ func (s *ClimateTestSuite) TestAverageRainfallForFranceFrom1980to1999Exists() {
 	s.Nil(err)
 }
 
-func (s *ClimateTestSuite) TestAverageRainfallForEgyptFrom1980to1999Exists() {
+func (s *ClimateLocalTestSuite) TestAverageRainfallForEgyptFrom1980to1999Exists() {
 	var (
 		ctx      = context.Background()
 		expected = float64(54.58587712129825)
@@ -180,7 +178,7 @@ func (s *ClimateTestSuite) TestAverageRainfallForEgyptFrom1980to1999Exists() {
 	s.Nil(err)
 }
 
-func (s *ClimateTestSuite) TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist() {
+func (s *ClimateLocalTestSuite) TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist() {
 	var (
 		ctx      = context.Background()
 		expected = float64(0)
@@ -190,7 +188,7 @@ func (s *ClimateTestSuite) TestAverageRainfallForGreatBritainFrom1985to1995DoesN
 	s.Error(err)
 }
 
-func (s *ClimateTestSuite) TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist() {
+func (s *ClimateLocalTestSuite) TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist() {
 	var (
 		ctx      = context.Background()
 		expected = float64(0)
